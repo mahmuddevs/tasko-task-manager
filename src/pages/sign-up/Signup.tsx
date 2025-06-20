@@ -66,7 +66,7 @@ const SignUp = () => {
                 {...register("fullName", { required: "Full name is required" })}
                 className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border ${
                   errors.fullName ? "border-red-500" : "border-gray-300"
-                } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all`}
+                } rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
                 placeholder="Enter your full name"
               />
               {errors.fullName && (
@@ -96,7 +96,7 @@ const SignUp = () => {
                 })}
                 className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border ${
                   errors.email ? "border-red-500" : "border-gray-300"
-                } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all`}
+                } rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
                 placeholder="Enter your email address"
               />
               {errors.email && (
@@ -127,7 +127,7 @@ const SignUp = () => {
                   })}
                   className={`w-full px-3 py-2 sm:px-4 sm:py-3 pr-10 text-sm sm:text-base border ${
                     errors.password ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all`}
+                  } rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
                   placeholder="••••••••••••"
                 />
                 <button
@@ -171,7 +171,7 @@ const SignUp = () => {
                     errors.confirmPassword
                       ? "border-red-500"
                       : "border-gray-300"
-                  } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all`}
+                  } rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
                   placeholder="Retype password"
                 />
                 <button

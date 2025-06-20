@@ -1,5 +1,7 @@
 import React from "react"
-import { FaTrash, FaCalendarAlt } from "react-icons/fa"
+import { TbPointFilled } from "react-icons/tb"
+import calanderIcon from "../assets/images/calendar.png"
+import trashIcon from "../assets/images/trash.png"
 
 export type Task = {
   id: string
@@ -20,13 +22,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete }) => {
   const getStatusColor = (status: string): string => {
     switch (status) {
       case "Pending":
-        return "bg-purple-100 text-purple-600 border-purple-200"
+        return "text-purple-600 border-purple-200"
       case "In Progress":
-        return "bg-orange-100 text-orange-600 border-orange-200"
+        return "text-orange-600 border-orange-200"
       case "Done":
-        return "bg-green-100 text-green-600 border-green-200"
+        return "text-primary/70 border-primary/70"
       default:
-        return "bg-gray-100 text-gray-600 border-gray-200"
+        return "text-gray-600 border-gray-200"
     }
   }
 
@@ -44,10 +46,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete }) => {
         </div>
         <button
           onClick={() => onDelete(task.id)}
-          className="text-red-400 hover:text-red-600 transition-colors p-1"
+          className="text-red-400 hover:text-red-600 transition-colors p-1 cursor-pointer"
           aria-label="Delete task"
         >
-          <FaTrash size={14} />
+          <img src={trashIcon} alt="trashIcon" />
         </button>
       </div>
 
@@ -59,16 +61,17 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete }) => {
       {/* Footer with date and status */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2 text-gray-500">
-          <FaCalendarAlt size={12} />
+          <img src={calanderIcon} alt="calanderIcon" />
           <span className="text-xs">{task.date}</span>
         </div>
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-            task.status
-          )}`}
+        <div
+          className={`${getStatusColor(task.status)} flex items-center gap-1`}
         >
-          {task.status}
-        </span>
+          <TbPointFilled />
+          <span className={`pe-3 py-1 rounded-full text-xs font-medium `}>
+            {task.status}
+          </span>
+        </div>
       </div>
     </div>
   )

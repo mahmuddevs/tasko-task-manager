@@ -72,7 +72,7 @@ const Login = () => {
                 })}
                 className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border ${
                   errors.email ? "border-red-500" : "border-gray-300"
-                } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all`}
+                } rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
                 placeholder="m32220@gmail.com"
               />
               {errors.email && (
@@ -103,7 +103,7 @@ const Login = () => {
                   })}
                   className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border ${
                     errors.password ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all`}
+                  } rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all`}
                   placeholder="Enter your password"
                 />
                 <button
@@ -134,7 +134,7 @@ const Login = () => {
                   id="rememberMe"
                   type="checkbox"
                   {...register("rememberMe")}
-                  className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                 />
                 <label
                   htmlFor="rememberMe"
@@ -143,12 +143,12 @@ const Login = () => {
                   Remember me
                 </label>
               </div>
-              <a
-                href="#"
+              <Link
+                to="/auth/reset-password"
                 className="text-sm text-gray-600 hover:text-gray-800 hover:underline"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Submit Button */}

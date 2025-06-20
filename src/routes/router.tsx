@@ -5,7 +5,9 @@ import Error from "../pages/error/Error"
 import Auth from "../layouts/Auth"
 import Login from "../pages/login/Login"
 import SignUp from "../pages/sign-up/Signup"
-import TaskList from "../pages/task-lists/TaskList"
+import TaskList from "../pages/task-list/TaskList"
+import ResetPassword from "../pages/reset-password/ResetPassword"
+import TaskDetails from "../pages/task-details/TaskDetails"
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: "/task-list",
         element: <TaskList />,
+      },
+      {
+        path: "/task-list/:id",
+        element: <TaskDetails />,
       },
     ],
   },
@@ -39,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "/auth/signup",
         element: <SignUp />,
+      },
+      {
+        path: "/auth/reset-password",
+        element: <ResetPassword />,
       },
     ],
   },

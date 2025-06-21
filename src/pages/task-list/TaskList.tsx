@@ -16,24 +16,22 @@ type Task = {
 }
 
 const TaskList = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    "Select Task Category"
-  )
-  const [selectedFilter, setSelectedFilter] = useState<string>("All Task")
+  const [selectedCategory, setSelectedCategory] = useState<string>("")
+  const [selectedFilter, setSelectedFilter] = useState<string>("")
   const [showAddTaskModal, setShowAddTaskModal] = useState<boolean>(false)
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
   // Sample task data
   const [tasks, setTasks] = useState<Task[]>([])
-  const [category, setCategory] = useState<string>("")
   const [deletId, setDeleteId] = useState<string>("")
-  const [status, setStatus] = useState<string>("")
   const axiosBase = useAxios()
 
   useEffect(() => {
     const fetchTasks = () => {
       axiosBase
-        .get(`/tasks/all-tasks?category=${category}&status=${status}`)
+        .get(
+          `/tasks/all-tasks?category=${selectedCategory}&status=${selectedFilter}`
+        )
         .then((res) => {
           if (res.data.success === false) {
             alert("Something Went Wrong")
@@ -46,11 +44,7 @@ const TaskList = () => {
     }
 
     fetchTasks()
-  }, [])
-
-  // const handleDeleteTask = (taskId: string) => {
-  //
-  // }
+  }, [selectedCategory, selectedFilter])
 
   const handleConfirmDelete = () => {
     axiosBase
@@ -110,11 +104,13 @@ const TaskList = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full md:min-w-[180px]"
               >
-                <option>Select Task Category</option>
-                <option>Art and Craft</option>
-                <option>Technology</option>
-                <option>Business</option>
-                <option>Education</option>
+                <option value="">Select Category</option>
+                <option value="Friends">Friends</option>
+                <option value="Arts and Craft">Arts and Craft</option>
+                <option value="Nature">Nature</option>
+                <option value="Family">Family</option>
+                <option value="Sport">Sport</option>
+                <option value="Meditation">Meditation</option>
               </select>
               <FaChevronDown
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
@@ -129,10 +125,10 @@ const TaskList = () => {
                 onChange={(e) => setSelectedFilter(e.target.value)}
                 className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full md:min-w-[180px]"
               >
-                <option>All Task</option>
-                <option>Pending</option>
-                <option>In Progress</option>
-                <option>Done</option>
+                <option value="">All Task</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
               </select>
               <FaChevronDown
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
@@ -155,34 +151,34 @@ const TaskList = () => {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M11.236 0.761963H4.584C2.525 0.761963 0.75 2.43096 0.75 4.49096V15.34C0.75 17.516 2.408 19.115 4.584 19.115H12.572C14.632 19.115 16.302 17.4 16.302 15.34V6.03796L11.236 0.761963Z"
                   stroke="#1F1F1F"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 <path
                   d="M10.9766 0.750244V3.65924C10.9766 5.07924 12.1256 6.23124 13.5456 6.23424C14.8616 6.23724 16.2086 6.23824 16.2996 6.23224"
                   stroke="#1F1F1F"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 <path
                   d="M10.7994 10.9141H5.89844"
                   stroke="#1F1F1F"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 <path
                   d="M8.34375 13.3654V8.46436"
                   stroke="#1F1F1F"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
 

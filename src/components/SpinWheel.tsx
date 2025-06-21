@@ -3,6 +3,7 @@ import spinnerWheel from "../assets/images/spinner.png"
 import triangle from "../assets/images/polygon.png"
 import spinIcon from "../assets/images/spin-icon.png"
 import { MdKeyboardArrowDown } from "react-icons/md"
+import { Link } from "react-router"
 
 // Segments in their visual order (clockwise from top)
 const segments = [
@@ -100,13 +101,14 @@ const SpinWheel = () => {
             <span>Spin</span>
             <img src={spinIcon} alt="" />
           </button>
-          <button
+          <Link
+            to={`/task-list`}
             className={`bg-primary hover:bg-primary/70 text-black px-6 py-3 rounded-md font-bold flex items-center  justify-center gap-2 disabled:opacity-50 cursor-pointer min-w-64 ${
               selected === "" ? "hidden" : "block"
             }`}
           >
             Go To Task
-          </button>
+          </Link>
         </div>
       </div>
     </section>

@@ -8,22 +8,23 @@ import useAxios from "../../hooks/useAxios"
 import { getStatusColor } from "../../components/TaskCard"
 import DeleteModal from "../../components/DeleteModal"
 import SuccessModal from "../../components/SuccessModal"
-import AddTaskModal from "../../components/AddTaskModal"
+import EditTaskModal from "../../components/EditTaskModal"
+import moment from "moment"
 
 type Task = {
   id: string
   category: string
   details: string
   endDate: string
-  status: "Done" | "Pending" | "In Progress"
+  status: "Done" | "Ongoing" | "In Progress"
   points: number
 }
 
 const TaskDetails = () => {
   const [task, setTask] = useState<Task>()
-  const [selectedStatus, setSelectedStatus] = useState<string>("Done")
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] =
     useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
@@ -49,17 +50,20 @@ const TaskDetails = () => {
     fetchTask()
   }, [])
 
-  const statusOptions = [
-    "All Task",
-    "Ongoing",
-    "Pending",
-    "Collaboration task",
-    "Done",
-  ]
+  const statusOptions = ["Ongoing", "In Progress", "Done"]
 
   const handleStatusChange = (status: string) => {
-    setSelectedStatus(status)
-    setIsStatusDropdownOpen(false)
+    axiosBase
+      .patch(`/tasks/task/${id}/status`, { status })
+      .then((res) => {
+        if (res.data) {
+          setTask(res.data)
+          setIsStatusDropdownOpen(false)
+        }
+      })
+      .catch((err: any) => {
+        alert(`Error: ${err.message}`)
+      })
   }
 
   const handleSubmit = async () => {
@@ -103,6 +107,21 @@ const TaskDetails = () => {
     setShowDeleteModal(false)
   }
 
+  const handleUpdateTask = async (data: any) => {
+    axiosBase
+      .patch(`/tasks/update/${data._id}`, data)
+      .then((res) => {
+        if (res.data.success) {
+          setTask(res.data.task)
+          setShowEditModal(false)
+          alert("Task Updated")
+        }
+      })
+      .catch((err: any) => {
+        alert(`Error: ${err.message}`)
+      })
+  }
+
   return (
     <section className="min-h-[70vh] flex flex-col">
       <div className="mx-auto flex flex-col flex-1 w-full gap-8">
@@ -116,7 +135,12 @@ const TaskDetails = () => {
             <span className="bg-purple-100 text-purple-600 px-3 py-1.5 rounded-md text-sm font-medium">
               {task?.points} Points
             </span>
-            <button className="bg-[#FFAB00]/10 hover:bg-[#FFAB00]/20 px-6 py-3 rounded-md flex items-center space-x-2 transition-colors text-sm font-semibold cursor-pointer text-[#FFAB00]">
+            <button
+              onClick={() => {
+                setShowEditModal(true)
+              }}
+              className="bg-[#FFAB00]/10 hover:bg-[#FFAB00]/20 px-6 py-3 rounded-md flex items-center space-x-2 transition-colors text-sm font-semibold cursor-pointer text-[#FFAB00]"
+            >
               <img src={editIcon} width="20px" alt="edit-icon" />
               <span>Edit Task</span>
             </button>
@@ -150,12 +174,14 @@ const TaskDetails = () => {
           <div className="mb-6">
             <h3 className="text-sm font-medium text-gray-700 mb-3">End Date</h3>
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2 text-gray-600 pe-6">
+              <div className="flex items-center space-x-2 text-gray-600 pe-2 md:pe-6">
                 <img src={calenderIcon} alt="calenderIcon" />
-                <span className="text-sm">{task?.endDate}</span>
+                <span className="text-sm">
+                  {moment(task?.endDate).format("dddd, MMMM D - YYYY")}
+                </span>
               </div>
               <div
-                className={`flex items-center gap-1 py-2 ps-8 border-s border-[#E1E1E1] ${getStatusColor(
+                className={`flex items-center gap-1 py-2 ps-4 md:ps-8 border-s border-[#E1E1E1] ${getStatusColor(
                   task?.status || ""
                 )}`}
               >
@@ -176,7 +202,7 @@ const TaskDetails = () => {
                   </svg>
                 </span>
                 <span
-                  className={`px-3 py-1 rounded-full text-2xl font-semibold`}
+                  className={`px-3 py-1 rounded-full text-md md:text-2xl font-semibold`}
                 >
                   {task?.status}
                 </span>
@@ -194,7 +220,7 @@ const TaskDetails = () => {
                 onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
                 className="w-full sm:w-64 bg-white border border-gray-300 rounded-md px-4 py-2.5 text-left flex items-center justify-between hover:border-gray-400 transition-colors"
               >
-                <span className="text-sm text-gray-700">{selectedStatus}</span>
+                <span className="text-sm text-gray-700">{task?.status}</span>
                 <FaChevronDown
                   className={`text-gray-400 transform transition-transform ${
                     isStatusDropdownOpen ? "rotate-180" : ""
@@ -212,7 +238,7 @@ const TaskDetails = () => {
                       className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between first:rounded-t-md last:rounded-b-md"
                     >
                       <span className="text-gray-700">{status}</span>
-                      {selectedStatus === status && (
+                      {task?.status === status && (
                         <FaCheck className="text-primary" size={12} />
                       )}
                     </button>
@@ -277,6 +303,16 @@ const TaskDetails = () => {
         onClose={handleCloseSuccessModal}
         points={task?.points}
       />
+      {task && (
+        <EditTaskModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false)
+          }}
+          onSubmit={handleUpdateTask}
+          initialData={task}
+        />
+      )}
     </section>
   )
 }

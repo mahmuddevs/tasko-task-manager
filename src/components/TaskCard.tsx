@@ -4,6 +4,7 @@ import calanderIcon from "../assets/images/calendar.png"
 import trashIcon from "../assets/images/trash.png"
 import taskIcon from "../assets/images/task.png"
 import { Link } from "react-router"
+import moment from "moment"
 
 type TaskCardProps = {
   _id: string
@@ -17,10 +18,10 @@ type TaskCardProps = {
 
 export const getStatusColor = (status: string): string => {
   switch (status) {
-    case "Pending":
-      return "text-purple-600 border-purple-200"
+    case "Ongoing":
+      return "text-orange-600 border-purple-200"
     case "In Progress":
-      return "text-orange-600 border-orange-200"
+      return "text-purple-600 border-orange-200"
     case "Done":
       return "text-primary/70 border-primary/70"
     default:
@@ -71,7 +72,9 @@ const TaskCard = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 text-gray-500">
             <img src={calanderIcon} alt="calanderIcon" />
-            <span className="text-xs">{endDate}</span>
+            <span className="text-xs">
+              {moment(endDate).format("dddd, MMMM D - YYYY")}
+            </span>
           </div>
           <div className={`${getStatusColor(status)} flex items-center gap-1`}>
             <TbPointFilled />

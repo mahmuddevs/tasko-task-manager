@@ -58,16 +58,6 @@ const SuccessModal = ({ isOpen, onClose, points }: SuccessModalProps) => {
 
           {/* Main Content */}
           <div className="relative z-10">
-            {/* Congratulations Text */}
-            <div className="mb-8">
-              <h1
-                className="text-4xl font-bold text-gray-800 mb-6"
-                style={{ fontFamily: "cursive" }}
-              >
-                Congratulations
-              </h1>
-            </div>
-
             {/* Success Message */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-4">

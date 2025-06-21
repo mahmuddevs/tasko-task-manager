@@ -1,8 +1,9 @@
 import { useForm } from "react-hook-form"
 import loginImg from "../../assets/images/login.png"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { useState } from "react"
+import useAuth from "../../hooks/useAuth"
 
 type FormData = {
   email: string
@@ -12,6 +13,8 @@ type FormData = {
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const { login } = useAuth()
+  const navigate = useNavigate()
 
   const {
     register,
@@ -24,8 +27,15 @@ const Login = () => {
   })
 
   const onSubmit = (data: FormData) => {
-    console.log("Login submitted:", data)
-    // Add your login logic here
+    const { email, password } = data
+    login(email, password)
+      .then(() => {
+        navigate("/")
+        alert("Logged In Successfully")
+      })
+      .catch((err: any) => {
+        console.log(err.message)
+      })
   }
 
   return (

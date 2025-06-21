@@ -54,7 +54,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete }) => {
       </div>
 
       {/* Description */}
-      <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+      <p className="text-gray-600 text-sm mb-4 leading-relaxed md:me-20">
         {task.description}
       </p>
 

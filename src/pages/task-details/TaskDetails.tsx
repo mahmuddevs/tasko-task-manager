@@ -88,7 +88,7 @@ const TaskDetails: React.FC = () => {
   }
 
   return (
-    <section className="p-4 sm:p-6 min-h-[80vh] flex flex-col">
+    <section className="min-h-[70vh] flex flex-col">
       <div className="mx-auto flex flex-col flex-1 w-full gap-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

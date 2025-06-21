@@ -2,22 +2,57 @@ import { FaUser } from "react-icons/fa"
 import { MdKeyboardArrowDown } from "react-icons/md"
 import headerImg from "../assets/images/header.png"
 import logo from "../assets/images/logo.png"
-import { NavLink } from "react-router"
+import { Link, NavLink, useLocation, useNavigate } from "react-router"
+import useAuth from "../hooks/useAuth"
+import { useEffect, useRef, useState } from "react"
 
 const Header = () => {
+  const { user, logOut } = useAuth()
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const onLogout = async () => {
+    logOut()
+      .then(() => {
+        setIsOpen(false)
+        navigate("/")
+      })
+      .catch((e) => {
+        alert(`Error: ${e.message}`)
+      })
+  }
+
   return (
     <header
-      className="bg-no-repeat bg-cover bg-center text-white px-6 md:px-24 py-6 h-44"
+      className={`bg-no-repeat bg-cover bg-center text-white px-6 md:px-24 py-6 ${
+        pathname.startsWith("/task-list") ? "h-72" : "h-44"
+      }`}
       style={{ backgroundImage: `url('${headerImg}')` }}
     >
       <div>
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="w-6 h-6 flex items-center justify-center">
               <img src={logo} alt="tasko" />
             </div>
             <span className="text-xl font-semibold">Tasko</span>
-          </div>
+          </Link>
           <nav className="flex items-center space-x-6">
             <NavLink to="/task-list" className="flex items-center space-x-1">
               <svg
@@ -59,15 +94,48 @@ const Header = () => {
             </NavLink>
           </nav>
 
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-              <FaUser className="text-white text-sm" />
+          {user ? (
+            <div className="relative" ref={dropdownRef}>
+              <div
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                  <FaUser className="text-white text-sm" />
+                </div>
+                <span>{user?.name}</span>
+                <MdKeyboardArrowDown />
+              </div>
+
+              {isOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                  <button
+                    onClick={onLogout}
+                    className="w-full text-[#1F1F1F] text-left px-4 py-2 text-semibold hover:bg-gray-100 cursor-pointer"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
-            <span>Thomas M.</span>
-            <MdKeyboardArrowDown />
-          </div>
+          ) : (
+            <div className="flex gap-4 items-center">
+              <NavLink to="/auth/login">Login</NavLink>
+              <NavLink to="/auth/signup">Sign Up</NavLink>
+            </div>
+          )}
         </div>
       </div>
+      {pathname.startsWith("/task-list") ? (
+        <div className="mt-6 space-y-4">
+          <h4 className="text-lg md:text-2xl text-primary">Hi {user?.name}</h4>
+          <h2 className="text-2xl md:text-4xl font-semibold text-white">
+            Welcome to Dashboard
+          </h2>
+        </div>
+      ) : (
+        ""
+      )}
     </header>
   )
 }

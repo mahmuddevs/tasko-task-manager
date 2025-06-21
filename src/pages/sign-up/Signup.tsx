@@ -2,7 +2,8 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import signupImg from "../../assets/images/signup.png"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
+import useAuth from "../../hooks/useAuth"
 
 type FormData = {
   fullName: string
@@ -14,6 +15,8 @@ type FormData = {
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
+  const { signup } = useAuth()
+  const navigate = useNavigate()
 
   const {
     register,
@@ -23,8 +26,19 @@ const SignUp = () => {
   } = useForm<FormData>()
 
   const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data)
-    // Add your signup logic here
+    const { fullName, email, password, confirmPassword } = data
+
+    if (password !== confirmPassword) {
+      console.error("Passwords do not match")
+      return
+    }
+    signup(fullName, email, password)
+      .then(() => {
+        navigate("/")
+      })
+      .catch((err: any) => {
+        alert(`Error: ${err.message}`)
+      })
   }
 
   const password = watch("password")

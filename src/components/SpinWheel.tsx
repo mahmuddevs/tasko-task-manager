@@ -46,7 +46,9 @@ const SpinWheel = () => {
   return (
     <section>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold text-gray-800">Spin Wheel</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          Spin Wheel
+        </h1>
 
         <div>
           <label className="block text-sm text-gray-600 mb-1">

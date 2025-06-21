@@ -8,6 +8,8 @@ import SignUp from "../pages/sign-up/Signup"
 import TaskList from "../pages/task-list/TaskList"
 import ResetPassword from "../pages/reset-password/ResetPassword"
 import TaskDetails from "../pages/task-details/TaskDetails"
+import PrivateAlt from "./route-protectors/PrivateAlt"
+import Private from "./route-protectors/Private"
 
 const router = createBrowserRouter([
   {
@@ -21,17 +23,29 @@ const router = createBrowserRouter([
       },
       {
         path: "/task-list",
-        element: <TaskList />,
+        element: (
+          <Private>
+            <TaskList />
+          </Private>
+        ),
       },
       {
         path: "/task-list/:id",
-        element: <TaskDetails />,
+        element: (
+          <Private>
+            <TaskDetails />
+          </Private>
+        ),
       },
     ],
   },
   {
     path: "/auth",
-    element: <Auth />,
+    element: (
+      <PrivateAlt>
+        <Auth />
+      </PrivateAlt>
+    ),
     errorElement: <Error />,
     children: [
       {
@@ -40,15 +54,27 @@ const router = createBrowserRouter([
       },
       {
         path: "/auth/login",
-        element: <Login />,
+        element: (
+          <PrivateAlt>
+            <Login />
+          </PrivateAlt>
+        ),
       },
       {
         path: "/auth/signup",
-        element: <SignUp />,
+        element: (
+          <PrivateAlt>
+            <SignUp />
+          </PrivateAlt>
+        ),
       },
       {
         path: "/auth/reset-password",
-        element: <ResetPassword />,
+        element: (
+          <PrivateAlt>
+            <ResetPassword />
+          </PrivateAlt>
+        ),
       },
     ],
   },

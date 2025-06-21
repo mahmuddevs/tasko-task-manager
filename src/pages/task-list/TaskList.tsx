@@ -1,96 +1,96 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaChevronDown } from "react-icons/fa"
 import TaskCard from "../../components/TaskCard"
-import type { Task } from "../../components/TaskCard"
 import noTaskBanner from "../../assets/images/notask.svg"
+import useAxios from "../../hooks/useAxios"
+import DeleteModal from "../../components/DeleteModal"
+import AddTaskModal from "../../components/AddTaskModal"
+
+type Task = {
+  _id: string
+  category: string
+  details: string
+  endDate: string
+  points: number
+  status: "Pending" | "In Progress" | "Done"
+}
 
 const TaskList = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>(
     "Select Task Category"
   )
   const [selectedFilter, setSelectedFilter] = useState<string>("All Task")
+  const [showAddTaskModal, setShowAddTaskModal] = useState<boolean>(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
   // Sample task data
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      title: "Art and Craft",
-      description:
-        "Select the role that you want to candidates for and upload your job description.",
-      date: "Friday, April 19 - 2024",
-      status: "Pending",
-      initials: "AC",
-      color: "bg-primary",
-    },
-    {
-      id: "2",
-      title: "Art and Craft",
-      description:
-        "Select the role that you want to candidates for and upload your job description.",
-      date: "Friday, April 19 - 2024",
-      status: "In Progress",
-      initials: "AC",
-      color: "bg-primary",
-    },
-    {
-      id: "3",
-      title: "Art and Craft",
-      description:
-        "Select the role that you want to candidates for and upload your job description.",
-      date: "Friday, April 19 - 2024",
-      status: "Done",
-      initials: "AC",
-      color: "bg-primary",
-    },
-    {
-      id: "4",
-      title: "Art and Craft",
-      description:
-        "Select the role that you want to candidates for and upload your job description.",
-      date: "Friday, April 19 - 2024",
-      status: "In Progress",
-      initials: "AC",
-      color: "bg-primary",
-    },
-    {
-      id: "5",
-      title: "Art and Craft",
-      description:
-        "Select the role that you want to candidates for and upload your job description.",
-      date: "Friday, April 18 - 2024",
-      status: "Done",
-      initials: "AC",
-      color: "bg-orange-500",
-    },
-    {
-      id: "6",
-      title: "Art and Craft",
-      description:
-        "Select the role that you want to candidates for and upload your job description.",
-      date: "Friday, April 19 - 2024",
-      status: "Pending",
-      initials: "AC",
-      color: "bg-primary",
-    },
-    {
-      id: "7",
-      title: "Art and Craft",
-      description:
-        "Select the role that you want to candidates for and upload your job description.",
-      date: "Friday, April 19 - 2024",
-      status: "Pending",
-      initials: "AC",
-      color: "bg-primary",
-    },
-  ])
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [category, setCategory] = useState<string>("")
+  const [deletId, setDeleteId] = useState<string>("")
+  const [status, setStatus] = useState<string>("")
+  const axiosBase = useAxios()
 
-  const handleDeleteTask = (taskId: string) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId))
+  useEffect(() => {
+    const fetchTasks = () => {
+      axiosBase
+        .get(`/tasks/all-tasks?category=${category}&status=${status}`)
+        .then((res) => {
+          if (res.data.success === false) {
+            alert("Something Went Wrong")
+          }
+          setTasks(res.data.tasks)
+        })
+        .catch((err: any) => {
+          alert(`Error: ${err.message}`)
+        })
+    }
+
+    fetchTasks()
+  }, [])
+
+  // const handleDeleteTask = (taskId: string) => {
+  //
+  // }
+
+  const handleConfirmDelete = () => {
+    axiosBase
+      .delete(`/tasks/task/${deletId}`)
+      .then((res) => {
+        if (res.data.success) {
+          alert("Task Deleted")
+          setShowDeleteModal(false)
+          setTasks((prevTasks) =>
+            prevTasks.filter((task) => task._id !== deletId)
+          )
+        }
+      })
+      .catch((err: any) => {
+        alert(`Error: ${err.message}`)
+      })
   }
 
-  const handleAddNewTask = () => {
-    console.log("Add new task clicked")
-    // Add your logic here for adding new tasks
+  const handleDeleteTask = (taskId: string) => {
+    setDeleteId(taskId)
+    setShowDeleteModal(true)
+  }
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false)
+  }
+
+  const handleAddTask = (data: any) => {
+    axiosBase
+      .post("/tasks/add", data)
+      .then((res) => {
+        if (res.data.success) {
+          setTasks([...tasks, res.data.task])
+          setShowAddTaskModal(false)
+          alert("Task Added Successfully")
+        }
+      })
+      .catch((err: any) => {
+        alert(`Error: ${err.message}`)
+      })
   }
 
   return (
@@ -142,7 +142,9 @@ const TaskList = () => {
 
             {/* Add New Task Button */}
             <button
-              onClick={handleAddNewTask}
+              onClick={() => {
+                setShowAddTaskModal(true)
+              }}
               className="bg-primary hover:bg-primary/70 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors whitespace-nowrap"
             >
               <svg
@@ -192,7 +194,7 @@ const TaskList = () => {
         {/* Task Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onDelete={handleDeleteTask} />
+            <TaskCard key={task?._id} {...task} onDelete={handleDeleteTask} />
           ))}
         </div>
       </div>
@@ -206,6 +208,16 @@ const TaskList = () => {
           </p>
         </div>
       )}
+      <DeleteModal
+        isOpen={showDeleteModal}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
+      <AddTaskModal
+        isOpen={showAddTaskModal}
+        onClose={() => setShowAddTaskModal(false)}
+        onSubmit={handleAddTask}
+      />
     </div>
   )
 }

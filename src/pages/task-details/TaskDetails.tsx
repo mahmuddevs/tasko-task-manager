@@ -1,47 +1,53 @@
-import React, { useState } from "react"
-import {
-  FaCalendarAlt,
-  FaChevronDown,
-  FaEdit,
-  FaArrowLeft,
-  FaTrash,
-  FaCheck,
-} from "react-icons/fa"
+import { useEffect, useState } from "react"
+import { FaChevronDown, FaTrash, FaCheck } from "react-icons/fa"
+import taskIcon from "../../assets/images/task.png"
+import calenderIcon from "../../assets/images/calendar.png"
+import editIcon from "../../assets/images/edit.png"
+import { Link, useNavigate, useParams } from "react-router"
+import useAxios from "../../hooks/useAxios"
+import { getStatusColor } from "../../components/TaskCard"
+import DeleteModal from "../../components/DeleteModal"
+import SuccessModal from "../../components/SuccessModal"
+import AddTaskModal from "../../components/AddTaskModal"
 
-interface Task {
+type Task = {
   id: string
-  title: string
-  description: string
+  category: string
+  details: string
   endDate: string
-  status:
-    | "Done"
-    | "All Task"
-    | "Ongoing"
-    | "Pending"
-    | "Collaboration task"
-    | "In Progress"
+  status: "Done" | "Pending" | "In Progress"
   points: number
-  initials: string
-  color: string
 }
 
-const TaskDetails: React.FC = () => {
-  const [task, setTask] = useState<Task>({
-    id: "1",
-    title: "Art and Craft",
-    description:
-      "Select the role that you want to candidates for and upload your job description. Select the role that you want to candidates for and upload your job description. Select the role that you want to candidates for and upload your job description.",
-    endDate: "Friday, April 19 - 2024",
-    status: "In Progress",
-    points: 20,
-    initials: "AC",
-    color: "bg-primary",
-  })
-
+const TaskDetails = () => {
+  const [task, setTask] = useState<Task>()
   const [selectedStatus, setSelectedStatus] = useState<string>("Done")
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false)
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] =
     useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const { id } = useParams()
+  const axiosBase = useAxios()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchTask = async () => {
+      axiosBase
+        .get(`/tasks/task/${id}`)
+        .then((res) => {
+          if (res.data.susccess === false) {
+            throw new Response("Not Found", { status: 404 })
+          }
+          setTask(res.data.task)
+        })
+        .catch((err: any) => {
+          alert(`Error: ${err.message}`)
+        })
+    }
+
+    fetchTask()
+  }, [])
 
   const statusOptions = [
     "All Task",
@@ -51,15 +57,6 @@ const TaskDetails: React.FC = () => {
     "Done",
   ]
 
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case "In Progress":
-        return "bg-orange-100 text-orange-600 border-orange-200"
-      default:
-        return "bg-orange-100 text-orange-600 border-orange-200"
-    }
-  }
-
   const handleStatusChange = (status: string) => {
     setSelectedStatus(status)
     setIsStatusDropdownOpen(false)
@@ -68,23 +65,42 @@ const TaskDetails: React.FC = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log("Task updated")
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+      console.log("Task completed successfully")
+      setShowSuccessModal(true)
+    } catch (error) {
+      console.error("Failed to complete task:", error)
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false)
+  }
+
+  const handleConfirmDelete = () => {
+    axiosBase
+      .delete(`/tasks/task/${id}`)
+      .then((res) => {
+        if (res.data.success) {
+          alert("Task Deleted")
+          setShowDeleteModal(false)
+          navigate("/task-list")
+        }
+      })
+      .catch((err: any) => {
+        alert(`Error: ${err.message}`)
+      })
+  }
+
   const handleDeleteTask = () => {
-    console.log("Delete task")
+    setShowDeleteModal(true)
   }
 
-  const handleBack = () => {
-    console.log("Navigate back")
-  }
-
-  const handleEditTask = () => {
-    console.log("Edit task")
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false)
   }
 
   return (
@@ -98,22 +114,18 @@ const TaskDetails: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
             <span className="bg-purple-100 text-purple-600 px-3 py-1.5 rounded-md text-sm font-medium">
-              {task.points} Points
+              {task?.points} Points
             </span>
-            <button
-              onClick={handleEditTask}
-              className="bg-yellow-500 hover:bg-yellow-600 px-4 py-1.5 rounded-md flex items-center space-x-2 transition-colors text-sm font-medium"
-            >
-              <FaEdit size={12} />
+            <button className="bg-[#FFAB00]/10 hover:bg-[#FFAB00]/20 px-6 py-3 rounded-md flex items-center space-x-2 transition-colors text-sm font-semibold cursor-pointer text-[#FFAB00]">
+              <img src={editIcon} width="20px" alt="edit-icon" />
               <span>Edit Task</span>
             </button>
-            <button
-              onClick={handleBack}
-              className="bg-primary hover:bg-primary/70 px-4 py-1.5 rounded-md flex items-center space-x-2 transition-colors text-sm font-medium"
+            <Link
+              to="/task-list"
+              className="bg-primary hover:bg-primary/70 px-6 py-3 rounded-md flex items-center space-x-2 transition-colors text-sm font-semibold cursor-pointer"
             >
-              <FaArrowLeft size={12} />
-              <span>Back</span>
-            </button>
+              Back
+            </Link>
           </div>
         </div>
 
@@ -122,17 +134,15 @@ const TaskDetails: React.FC = () => {
           {/* Task Header */}
           <div className="flex items-start space-x-4 mb-6">
             <div
-              className={`w-16 h-16 ${task.color} rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0`}
+              className={`w-16 h-16 bg-primary rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0`}
             >
-              {task.initials}
+              <img src={taskIcon} alt="task-icon" />
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-                {task.title}
+                {task?.category}
               </h2>
-              <p className="text-gray-600 leading-relaxed">
-                {task.description}
-              </p>
+              <p className="text-gray-600 leading-relaxed">{task?.details}</p>
             </div>
           </div>
 
@@ -140,17 +150,37 @@ const TaskDetails: React.FC = () => {
           <div className="mb-6">
             <h3 className="text-sm font-medium text-gray-700 mb-3">End Date</h3>
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <FaCalendarAlt size={14} />
-                <span className="text-sm">{task.endDate}</span>
+              <div className="flex items-center space-x-2 text-gray-600 pe-6">
+                <img src={calenderIcon} alt="calenderIcon" />
+                <span className="text-sm">{task?.endDate}</span>
               </div>
-              <span
-                className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
-                  task.status
+              <div
+                className={`flex items-center gap-1 py-2 ps-8 border-s border-[#E1E1E1] ${getStatusColor(
+                  task?.status || ""
                 )}`}
               >
-                {task.status}
-              </span>
+                <span>
+                  <svg
+                    width="14"
+                    height="15"
+                    viewBox="0 0 14 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="6.90592"
+                      cy="7.49992"
+                      r="6.90592"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <span
+                  className={`px-3 py-1 rounded-full text-2xl font-semibold`}
+                >
+                  {task?.status}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -194,7 +224,7 @@ const TaskDetails: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-end self-end mt-6 mt-auto">
+        <div className="flex flex-col sm:flex-row gap-3 justify-end self-end mt-auto">
           <button
             onClick={handleDeleteTask}
             className="bg-[#FF4C24]/30 hover:bg-[#FF4C24]/40 text-[#FF4C24] px-6 py-2.5 rounded-md flex items-center justify-center space-x-2 transition-colors font-medium cursor-pointer"
@@ -237,6 +267,16 @@ const TaskDetails: React.FC = () => {
           </button>
         </div>
       </div>
+      <DeleteModal
+        isOpen={showDeleteModal}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        points={task?.points}
+      />
     </section>
   )
 }
